@@ -1,0 +1,11 @@
+<div class='ui-view'></div>
+<div style='margin-bottom: 10px'>
+  <button class='btn btn-primary' ui-sref='photos.add'>Add A Photo</button>
+</div>
+<ul class='list-group' ng-repeat='photo in photos'>
+  <li class='list-group-item'>
+    <a ui-sref='photos.edit({id: photo._id})'>
+      {{ photo.name }}
+    </a>
+  </li>
+</ul>
