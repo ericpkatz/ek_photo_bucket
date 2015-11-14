@@ -1,6 +1,9 @@
 {
   "name": "FullstackGeneratedApp",
   "version": "1.0.0",
+  "engines" : {
+    "node": "0.12.7"
+  },
   "description": "A generated project at Fullstack Academy",
   "main": "server/start.js",
   "scripts": {
