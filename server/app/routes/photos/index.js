@@ -4,6 +4,8 @@ module.exports = router;
 var _ = require('lodash');
 var mongoose = require('mongoose');
 var Photo = mongoose.model('Photo');
+var multiparty = require('connect-multiparty');
+
 
 var ensureAuthenticated = function (req, res, next) {
     if (req.isAuthenticated()) {
@@ -12,6 +14,8 @@ var ensureAuthenticated = function (req, res, next) {
         res.status(401).end();
     }
 };
+
+router.use(multiparty());
 
 router.get('/', ensureAuthenticated, function (req, res) {
   Photo.find()
@@ -27,8 +31,20 @@ router.get('/:id', ensureAuthenticated, function (req, res) {
     });
 });
 
+router.delete('/:id', ensureAuthenticated, function (req, res) {
+  Photo.findById(req.params.id)
+    .then(function(photo){
+      return photo.remove();
+    })
+    .then(function(photo){
+      return res.sendStatus(204);
+    });
+});
+
 router.post('/', ensureAuthenticated, function (req, res) {
-  var photo = new Photo(req.body);
+  var photo = new Photo(req.body.photo);
+  photo.file = req.files.file;
+  console.log(photo.file);
   photo.save()
     .then(function(photo){
       res.send(photo);
@@ -38,7 +54,9 @@ router.post('/', ensureAuthenticated, function (req, res) {
 router.put('/:id', ensureAuthenticated, function (req, res) {
   Photo.findById(req.params.id)
     .then(function(photo){
-      _.extend(photo, req.body);
+      photo.file = req.files.file;
+      console.log(photo.file);
+      _.extend(photo, req.body.photo);
       return photo.save();
     })
   .then(function(photo){

@@ -18,7 +18,7 @@ app.config(function ($stateProvider) {
 
 });
 
-app.factory('PhotoFactory', function ($http) {
+app.factory('PhotoFactory', function ($http, Upload) {
 
     var getPhotos = function () {
         return $http.get('/api/photos').then(function (response) {
@@ -32,23 +32,40 @@ app.factory('PhotoFactory', function ($http) {
         });
     };
 
-    var create = function (photo) {
-        return $http.post('/api/photos', photo).then(function (response) {
+    var remove = function (photo) {
+        return $http.delete('/api/photos/' + photo._id).then(function (response) {
             return response.data;
         });
     };
 
-    var update = function (photo) {
-        return $http.put('/api/photos/' + photo._id, photo).then(function (response) {
-            return response.data;
-        });
+    var create = function (photo, file) {
+      return Upload.upload({
+        url: '/api/photos',
+        method: 'POST',
+        data: { file: file, photo: photo } 
+      })
+      .then(function(result){
+        return result.data;
+      });
+    };
+
+    var update = function (photo, file) {
+      return Upload.upload({
+        url: '/api/photos/' + photo._id,
+        method: 'PUT',
+        data: { file: file, photo: photo } 
+      })
+      .then(function(result){
+        return result.data;
+      });
     };
 
     return {
         get: get,
         getPhotos: getPhotos,
         create: create,
-        update: update
+        update: update,
+        remove: remove 
     };
 
 });
