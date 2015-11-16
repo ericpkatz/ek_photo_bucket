@@ -43,8 +43,7 @@ router.delete('/:id', ensureAuthenticated, function (req, res) {
 
 router.post('/', ensureAuthenticated, function (req, res) {
   var photo = new Photo(req.body.photo);
-  photo.file = req.files.file;
-  console.log(photo.file);
+  photo.url = req.files.file.path;
   photo.save()
     .then(function(photo){
       res.send(photo);
@@ -54,9 +53,8 @@ router.post('/', ensureAuthenticated, function (req, res) {
 router.put('/:id', ensureAuthenticated, function (req, res) {
   Photo.findById(req.params.id)
     .then(function(photo){
-      photo.file = req.files.file;
-      console.log(photo.file);
       _.extend(photo, req.body.photo);
+      photo.url = req.files.file.path;
       return photo.save();
     })
   .then(function(photo){

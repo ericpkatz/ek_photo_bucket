@@ -10,11 +10,10 @@ var schema = new mongoose.Schema({
     }
 });
 
-// generateSalt, encryptPassword and the pre 'save' and 'correctPassword' operations
-// are all used for local authentication security.
-
 schema.pre('save', function (next) {
-    next();
+  console.log('TO DO - write this path to s3', this.url);
+  console.log(this);
+  next();
 
 });
 
