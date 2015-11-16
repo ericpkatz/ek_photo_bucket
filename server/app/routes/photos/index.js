@@ -24,11 +24,29 @@ router.get('/', ensureAuthenticated, function (req, res) {
     });
 });
 
-router.get('/:id', ensureAuthenticated, function (req, res) {
+router.get('/bucket', function(req, res, next){
+  var AWS = require('aws-sdk');
+  var s3 = new AWS.S3({
+    accessKeyId: require('../../../env').AWS_ACCESS_KEY, 
+    secretAccessKey: require('../../../env').AWS_ACCESS_KEY_SECRET,
+    params: {Bucket: 'ek_photo_bucket', Key: 'foo' + Math.random()}
+  });
+  s3.createBucket(function(err) {
+    if (err) { next(err); }
+    else {
+      s3.upload({Body: 'bar'}, function() {
+        res.send("Successfully uploaded data to myBucket/myKey");
+      });
+    }
+  });
+
+});
+
+router.get('/:id', ensureAuthenticated, function (req, res, next) {
   Photo.findById(req.params.id)
     .then(function(photo){
       res.send(photo);
-    });
+    }, next);
 });
 
 router.delete('/:id', ensureAuthenticated, function (req, res) {
@@ -49,6 +67,7 @@ router.post('/', ensureAuthenticated, function (req, res) {
       res.send(photo);
     });
 });
+
 
 router.put('/:id', ensureAuthenticated, function (req, res) {
   Photo.findById(req.params.id)
